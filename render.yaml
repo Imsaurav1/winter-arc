@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: winter-arc
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips="*"
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: MONGO_URI
+        sync: false
+      - key: APP_PIN
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DB_NAME
+        value: winter_arc
+      - key: APP_TZ
+        value: Asia/Kolkata
+      - key: ARC_START_DATE
+        value: "2026-10-01"

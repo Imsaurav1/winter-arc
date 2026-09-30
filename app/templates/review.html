@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Weekly review · Winter Arc{% endblock %}
+{% block content %}
+<h1 class="pg">Weekly review</h1>
+<p class="hint">Five minutes each Sunday: what worked, what slipped, what you will change.</p>
+{% for w in weeks %}
+{% set r = saved.get(w.no, {}) %}
+<details class="week" {% if w.no == cur_week %}open{% endif %}>
+  <summary><span>Week {{ w.no }}</span><span class="hint">{{ w.start.strftime('%d %b') }} to {{ w.end.strftime('%d %b') }}</span><b>{{ w.pct if w.pct is not none else '-' }}{{ '%' if w.pct is not none }}</b></summary>
+  <form method="post" action="/review/{{ w.no }}">
+    <label>What went well<textarea name="wins" rows="2" maxlength="2000">{{ r.get('wins', '') }}</textarea></label>
+    <label>What slipped<textarea name="misses" rows="2" maxlength="2000">{{ r.get('misses', '') }}</textarea></label>
+    <label>What I will change next week<textarea name="adjust" rows="2" maxlength="2000">{{ r.get('adjust', '') }}</textarea></label>
+    <button class="primary" type="submit">Save review</button>
+  </form>
+</details>
+{% else %}
+<p class="empty">Week 1 opens when the arc starts on {{ arc.start.strftime('%d %b') }}.</p>
+{% endfor %}
+{% endblock %}

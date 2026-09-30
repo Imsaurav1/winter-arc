@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Winter Arc{% endblock %}
+{% block content %}
+<section class="login">
+  <h1>Winter Arc</h1>
+  <p class="lede">90 days. Your rules. Enter your PIN to open the tracker.</p>
+  <form method="post" action="/login">
+    <label for="pin">PIN</label>
+    <input id="pin" name="pin" type="password" inputmode="numeric" autocomplete="current-password" autofocus required>
+    {% if error %}<p class="err">{{ error }}</p>{% endif %}
+    {% if not configured %}<p class="err">Set the APP_PIN environment variable, then redeploy.</p>{% endif %}
+    <button class="primary" type="submit">Open tracker</button>
+  </form>
+</section>
+{% endblock %}

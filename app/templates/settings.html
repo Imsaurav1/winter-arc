@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Settings · Winter Arc{% endblock %}
+{% block content %}
+<h1 class="pg">Settings</h1>
+{% if saved %}<p class="banner">Settings saved.</p>{% endif %}
+<form method="post" action="/settings" class="stack">
+  <label>Start date<input type="date" name="start_date" value="{{ arc.start.isoformat() }}" required></label>
+  <p class="hint">The arc runs {{ arc.days }} days from this date and ends {{ arc.end.strftime('%d %b %Y') }}. Changing it moves your original tasks with it; logged days stay on their dates.</p>
+  <label>Streak shields<input type="number" name="shields" min="0" max="30" value="{{ arc.shields }}"></label>
+  <label>My contract<textarea name="contract" rows="5" maxlength="3000" placeholder="Why I am doing this and the rules I will follow.">{{ arc.contract }}</textarea></label>
+  <label>Day 91 plan<textarea name="after" rows="3" maxlength="3000" placeholder="Which habits continue after the arc ends?">{{ arc.after }}</textarea></label>
+  <button class="primary" type="submit">Save settings</button>
+</form>
+<h2>Your data</h2>
+<p><a class="link" href="/export.json">Download a full backup (JSON)</a></p>
+<form method="post" action="/logout"><button class="link" type="submit">Sign out</button></form>
+{% endblock %}

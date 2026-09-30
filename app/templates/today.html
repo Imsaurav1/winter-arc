@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<header class="top">
+  {% if state == 'active' %}
+  <div class="dayhead"><span class="daynum">{{ day_no }}</span><span class="of">of {{ arc.days }} days</span></div>
+  {% elif state == 'before' %}
+  <div class="dayhead"><span class="daynum">{{ days_to_start }}</span><span class="of">{{ 'day' if days_to_start == 1 else 'days' }} until the arc starts on {{ arc.start.strftime('%d %b') }}</span></div>
+  {% else %}
+  <div class="dayhead"><span class="daynum">{{ arc.days }}</span><span class="of">days done. The arc is complete.</span></div>
+  {% endif %}
+  <div class="pills">
+    <span class="pill" title="Consecutive fully completed days"><b>{{ streak.current }}</b> day streak</span>
+    <span class="pill" title="A missed day spends a shield instead of ending your streak"><b>{{ streak.shields_left }}</b> shields left</span>
+  </div>
+</header>
+<div class="arcbar" aria-hidden="true"><i style="width:{{ (100 * day_no / arc.days)|round|int }}%"></i></div>
+
+<div class="datenav">
+  {% if prev %}<a href="/?d={{ prev.isoformat() }}" aria-label="Previous day">&lsaquo;</a>{% else %}<span></span>{% endif %}
+  <div><strong>{{ sel.strftime('%A, %d %B') }}</strong>{% if not is_today %}<a class="back" href="/">Back to today</a>{% endif %}</div>
+  {% if next %}<a href="/?d={{ next.isoformat() }}" aria-label="Next day">&rsaquo;</a>{% else %}<span></span>{% endif %}
+</div>
+
+{% if state == 'before' and not editable %}
+<p class="banner">Logging opens on {{ arc.start.strftime('%A, %d %B') }}. Use the time to set your tasks and contract.</p>
+{% endif %}
+{% if state == 'after' %}
+<p class="banner">Day 91 plan: {{ arc.after or 'You have not written one yet. Add it in Settings.' }}</p>
+{% endif %}
+
+{% include "_today.html" %}
+
+<section class="noteblock">
+  <label for="note">Note for {{ sel.strftime('%d %b') }}</label>
+  <textarea id="note" name="text" rows="3" maxlength="2000" placeholder="One line: what happened today?"
+    hx-post="/note" hx-trigger="change" hx-target="#note-status" hx-include="[name=date]" {% if not editable %}disabled{% endif %}>{{ note }}</textarea>
+  <input type="hidden" name="date" value="{{ sel.isoformat() }}">
+  <span id="note-status" class="hint" aria-live="polite"></span>
+</section>
+
+{% if arc.contract %}
+<details class="contract"><summary>My contract</summary><p>{{ arc.contract }}</p></details>
+{% endif %}
+{% endblock %}

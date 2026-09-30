@@ -1,0 +1,27 @@
+<section id="today-card">
+  <div class="sum">
+    <p><b>{{ info.logged }}</b> of {{ info.total }} logged{% if info.complete %}. Day complete.{% endif %}</p>
+    <div class="bar"><i style="width:{{ (100 * info.logged / info.total)|round|int if info.total else 0 }}%"></i></div>
+  </div>
+  {% if not info.active %}
+  <p class="empty">No tasks for this day yet. <a href="/tasks">Add your daily tasks</a>.</p>
+  {% endif %}
+  <ul class="tasks">
+    {% for t in info.active %}
+    {% set s = info.status.get(t.id) %}
+    {% set ts = tstreaks[t.id] %}
+    <li class="task {{ s or '' }}">
+      <div class="tinfo">
+        <strong>{{ t.name }}</strong>
+        <span class="meta">{{ t.category }}{% if t.minimum %}, minimum: {{ t.minimum }}{% endif %}{% if ts.cur > 1 %}, {{ ts.cur }}-day streak{% endif %}</span>
+      </div>
+      <div class="seg" role="group" aria-label="Log {{ t.name }}">
+        <button type="button" class="{{ 'on' if s == 'done' }}" aria-pressed="{{ 'true' if s == 'done' else 'false' }}"
+          {% if editable %}hx-post="/log" hx-vals='{"date":"{{ info.date.isoformat() }}","task_id":"{{ t.id }}","status":"done"}' hx-target="#today-card" hx-swap="outerHTML"{% else %}disabled{% endif %}>Done</button>
+        <button type="button" class="min {{ 'on' if s == 'min' }}" aria-pressed="{{ 'true' if s == 'min' else 'false' }}"
+          {% if editable %}hx-post="/log" hx-vals='{"date":"{{ info.date.isoformat() }}","task_id":"{{ t.id }}","status":"min"}' hx-target="#today-card" hx-swap="outerHTML"{% else %}disabled{% endif %}>Minimum</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+</section>

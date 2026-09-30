@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Progress · Winter Arc{% endblock %}
+{% block content %}
+<h1 class="pg">Progress</h1>
+<dl class="kpis">
+  <div><dt>Tasks logged</dt><dd>{{ s.overall_pct }}%</dd></div>
+  <div><dt>Complete days</dt><dd>{{ s.perfect }}</dd></div>
+  <div><dt>Current streak</dt><dd>{{ s.overall.current }}</dd></div>
+  <div><dt>Best streak</dt><dd>{{ s.overall.longest }}</dd></div>
+</dl>
+<p class="hint">{{ s.overall.shields_left }} of {{ arc.shields }} shields left. A missed day spends a shield instead of ending your streak.</p>
+
+<h2>The {{ arc.days }} days</h2>
+<div class="heat" role="img" aria-label="Heatmap of all {{ arc.days }} days">
+  {% for i in range(s.offset) %}<i class="cell pad"></i>{% endfor %}
+  {% for c in s.heat %}<a class="cell l{{ c.level }}{{ ' now' if c.today }}{{ ' fut' if c.future }}" href="/?d={{ c.iso }}" title="{{ c.title }}"></a>{% endfor %}
+</div>
+<div class="legend"><span>Nothing</span><i class="cell l0"></i><i class="cell l1"></i><i class="cell l2"></i><i class="cell l3"></i><i class="cell l4"></i><span>All done, no minimums</span></div>
+<p class="hint">Columns are weeks, rows run Monday to Sunday. Tap a day to edit it.</p>
+
+<h2>By task</h2>
+<ul class="rows">
+  {% for p in s.per_task %}
+  <li><div class="rowtop"><strong>{{ p.t.name }}</strong><span>{{ p.pct }}%</span></div>
+    <div class="bar"><i style="width:{{ p.pct }}%"></i></div>
+    <span class="hint">{{ p.done }} done, {{ p.mins }} minimum, streak {{ p.cur }}, best {{ p.longest }}</span></li>
+  {% else %}<li class="empty">No tasks yet.</li>{% endfor %}
+</ul>
+
+<h2>By weekday</h2>
+<div class="cols">
+  {% for w in s.weekday %}<div class="col"><div class="colbar"><i style="height:{{ w.pct }}%"></i></div><span>{{ w.name }}</span><small>{{ w.pct if w.has else '-' }}</small></div>{% endfor %}
+</div>
+
+{% if s.categories %}
+<h2>By category</h2>
+<ul class="rows">
+  {% for c in s.categories %}<li><div class="rowtop"><strong>{{ c.name }}</strong><span>{{ c.pct }}%</span></div><div class="bar"><i style="width:{{ c.pct }}%"></i></div></li>{% endfor %}
+</ul>
+{% endif %}
+
+<h2>By week</h2>
+<div class="cols weeks">
+  {% for w in s.weeks %}<a class="col" href="/review" title="Week {{ w.no }}"><div class="colbar"><i style="height:{{ w.pct or 0 }}%"></i></div><span>{{ w.no }}</span></a>{% endfor %}
+</div>
+{% endblock %}

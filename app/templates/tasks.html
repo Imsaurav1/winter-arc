@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Tasks · Winter Arc{% endblock %}
+{% block content %}
+<h1 class="pg">Daily tasks</h1>
+<p class="hint">Keep it to 3 to 7. Write a minimum version you could do on your worst day. Changes apply from today; past days keep their history.</p>
+
+<ul class="rows tl">
+  {% for t in active %}
+  <li>
+    <form method="post" action="/tasks/{{ t.id }}/edit" class="tform">
+      <input name="name" value="{{ t.name }}" required maxlength="80" aria-label="Task name">
+      <input name="category" value="{{ t.category }}" maxlength="30" aria-label="Category">
+      <input name="minimum" value="{{ t.minimum }}" maxlength="80" placeholder="Minimum version" aria-label="Minimum version">
+      <input name="order" type="number" value="{{ t.order }}" aria-label="Order">
+      <button class="primary sm" type="submit">Save</button>
+    </form>
+    <form method="post" action="/tasks/{{ t.id }}/archive" onsubmit="return confirm('Stop tracking this task from today?')"><button class="link" type="submit">Archive</button></form>
+  </li>
+  {% else %}<li class="empty">No tasks yet. Add your first one below.</li>{% endfor %}
+</ul>
+
+<h2>Add a task</h2>
+<form method="post" action="/tasks" class="tform add">
+  <input name="name" placeholder="Task, e.g. Read 10 pages" required maxlength="80" aria-label="Task name">
+  <input name="category" placeholder="Category" maxlength="30" aria-label="Category">
+  <input name="minimum" placeholder="Minimum version" maxlength="80" aria-label="Minimum version">
+  <input name="order" type="number" value="50" aria-label="Order">
+  <button class="primary" type="submit">Add task</button>
+</form>
+
+{% if archived %}
+<details class="contract"><summary>Archived ({{ archived|length }})</summary>
+  <ul class="plain">{% for t in archived %}<li>{{ t.name }} <span class="hint">stopped {{ t.end_date }}</span></li>{% endfor %}</ul>
+</details>
+{% endif %}
+{% endblock %}
